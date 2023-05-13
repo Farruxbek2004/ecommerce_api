@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from common.models import Category
 from products.models import Product
 
@@ -10,19 +11,26 @@ class ProductCategorySerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
+    category = ProductCategorySerializer()
+
     class Meta:
         model = Product
-        fields = ["id", "title", "slug"]
+        fields = ["id", "title", "slug", "price", "image", "category"]
+
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     data["category"] = ProductCategorySerializer(instance.category).data
+    #     return data
 
 
-class ProductCreateSerializers(serializers.ModelSerializer):
+class ProductCreateSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(required=False)
 
     class Meta:
         model = Product
         fields = ["id", "title", "slug", "price", "category"]
 
-        def to_representation(self, instance):
-            data = super().to_representation(instance)
-            data["category"] = ProductCategorySerializer(instance.category).data
-            return data
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["category"] = ProductCategorySerializer(instance.category).data
+        return data
